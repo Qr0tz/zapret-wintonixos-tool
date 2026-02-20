@@ -1,3 +1,5 @@
+# DOESN'T WORK RIGHT NOW
+
 # Port strategies from Flowseal/zapret-discord-youtube repo to nixos config
 One-click utility for downloading and porting strategies from Flowseal/zapret-discord-youtube repo to your nixos configuration (zapret nixos service configurations)
 
