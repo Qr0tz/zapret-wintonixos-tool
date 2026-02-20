@@ -1,4 +1,4 @@
-use std::{env, fs::{self, File}, io, process::{self, Command}};
+use std::{fs::{self, File}, io, process::{self, Command}};
 
 use reqwest::blocking::Response;
 
@@ -15,12 +15,8 @@ fn info(message: String) {
     println!("\x1b[1;34m[Info]\x1b[0m {}", message);
 }
 
-fn get_home() -> String {
-    env::var_os("HOME")
-        .ok_or("\x1b[1;31m[!]\x1b[0m No HOME variable set")
-        .unwrap()
-        .into_string()
-        .unwrap_or(String::from(""))
+fn file_dir() -> String {
+    String::from("/etc/zapretfiles")
 }
 
 /// Downloads files and save converted files
@@ -31,7 +27,7 @@ fn download() {
         "lists/ipset-all.txt",
         "lists/ipset-exclude.txt",
         "lists/list-exclude.txt",
-        "lists/list_general.txt",
+        "lists/list-general.txt",
         "lists/list-google.txt",
 
         "bin/quic_initial_www_google_com.bin",
@@ -61,15 +57,15 @@ fn download() {
         "general (SIMPLE FAKE ALT2).bat",
     ];
 
-    let home = get_home();
+    let home = file_dir();
 
     // Create directories
-    let _ = fs::create_dir_all(format!("{}/.zapretfiles/lists", home));
-    let _ = fs::create_dir_all(format!("{}/.zapretfiles/bin", home));
+    let _ = fs::create_dir_all(format!("{}/lists", home));
+    let _ = fs::create_dir_all(format!("{}/bin", home));
 
     // Downloading files
     for download in DOWNLOAD_LIST {
-        let file: String = format!("{}/.zapretfiles/{}", home, download);
+        let file: String = format!("{}/{}", home, download);
         info(format!("Downloading: {}", file));
 
         // Get response from server
@@ -84,7 +80,7 @@ fn download() {
 
     // Getting .bat files, and save generated .nix
     for bat in BATLIST {
-        let file: String = format!("{}/.zapretfiles/{}", home, bat.replace(".bat", ".nix"));
+        let file: String = format!("{}/{}", home, bat.replace(".bat", ".nix"));
         info(format!("Converting: {}", file));
 
         // Get response from server
@@ -112,9 +108,11 @@ fn get_options(content: String) -> Vec<String> {
 
         if is_params {
             let mut target_line = line.to_owned();
-            // delete " ^" from every line
+            // delete " ^" from every line if needed
+            if target_line.chars().last().unwrap_or('^') == '^' {
+                target_line.pop();
             target_line.pop();
-            target_line.pop();
+            }
             params.push(target_line);
         }
 
@@ -132,8 +130,8 @@ fn get_options(content: String) -> Vec<String> {
 fn convert(options: Vec<String>) -> String {
     const GAME_FILTER: &str = "1024-65535";
     const UDP_PORTS: &str = "\"443\" \"1024-65535\"";
-    let bin: String = format!("{}/.zapretfiles/bin/", get_home());
-    let lists: String = format!("{}/.zapretfiles/lists/", get_home());
+    let bin: String = format!("{}/bin/", file_dir());
+    let lists: String = format!("{}/lists/", file_dir());
 
     let mut new_options: Vec<String> = options;
     let _ = new_options.remove(0);
@@ -142,6 +140,7 @@ fn convert(options: Vec<String>) -> String {
         .map(|s| s.replace("%GameFilter%", GAME_FILTER))
         .map(|s| s.replace("%BIN%", bin.as_str()))
         .map(|s| s.replace("%LISTS%", lists.as_str()))
+        .map(|s| s.replace("\"", "\\\""))
         .map(|s| format!("\"{}\"", s))
         .collect();
 
@@ -154,7 +153,7 @@ fn convert(options: Vec<String>) -> String {
     res
 }
 
-/// Copy configurations from ~/.zapretfiles to /etc/nixos/zapret
+/// Copy configurations to /etc/nixos/zapret
 fn copy_files() {
     info(String::from("Copying files"));
 
@@ -165,8 +164,8 @@ fn copy_files() {
         .status()
         .expect(_fatal_message("Can't make /etc/nixos/zapret directory").as_str());
 
-    // Copies all .nix files from ~/.zapretfiles to /etc/nixos/zapret
-    for obj in fs::read_dir(format!("{}/.zapretfiles/", get_home())).expect(_fatal_message("Can't read directory").as_str()) {
+    // Copies all .nix files to /etc/nixos/zapret
+    for obj in fs::read_dir(format!("{}/", file_dir())).expect(_fatal_message("Can't read directory").as_str()) {
         // Get object path and info it
         let obj = obj.expect(_fatal_message("Can't resolve object").as_str()).path();
         info(format!("Copying: {:?}", obj));
@@ -183,8 +182,8 @@ fn copy_files() {
 
 use nix::unistd::Uid;
 fn main() {
-    if Uid::effective().is_root() {
-        exit_fatal(String::from("Don't run tool using sudo!"), 1);
+    if !Uid::effective().is_root() {
+        exit_fatal(String::from("Sudo is required"), 1);
     }
     let usage: String = String::from("USAGE: zapret-wintonixos-tool [OPTIONS]\nOptions:\n\t-nd\t No download (skip download stage)\n\t-nc\t No copy (don't copy generated .nix files to /etc/nixos/zapret)\n\nDo not use -nd and -nc at the same time because that's all program does");
     let args: Vec<String> = std::env::args().skip(1).collect();

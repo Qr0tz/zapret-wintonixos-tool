@@ -1,10 +1,8 @@
-# DOESN'T WORK RIGHT NOW
-
 # Port strategies from Flowseal/zapret-discord-youtube repo to nixos config
-One-click utility for downloading and porting strategies from Flowseal/zapret-discord-youtube repo to your nixos configuration (zapret nixos service configurations)
+One-click utility for downloading and porting strategies from Flowseal/zapret-discord-youtube repo in your nixos configuration (zapret nixos service configurations)
 
 ## Process:
-1. Tool downloads necessary files from Flowseal/zapret-discord-youtube repo to ~/.zapretfiles
+1. Tool downloads necessary files from Flowseal/zapret-discord-youtube repo to /etc/zapretfiles
 2. Converts to .nix configuration files (layout below)
 ```nix
 { config, pkgs, ...}:
@@ -21,7 +19,7 @@ One-click utility for downloading and porting strategies from Flowseal/zapret-di
   };
 }
 ```
-3. It will try to copy files into /etc/nixos/zapret (sudo installed required)
+3. It will try to copy files into /etc/nixos/zapret
 4. Done!
 
 # Thanks for visiting
