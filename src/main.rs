@@ -23,7 +23,7 @@ fn file_dir() -> String {
 fn download() {
     const URL: &str = "https://raw.githubusercontent.com/Flowseal/zapret-discord-youtube/refs/heads/main/";
     // Files to download
-    const DOWNLOAD_LIST: [&str; 9] = [
+    const DOWNLOAD_LIST: [&str; 10] = [
         "lists/ipset-all.txt",
         "lists/ipset-exclude.txt",
         "lists/list-exclude.txt",
@@ -33,7 +33,8 @@ fn download() {
         "bin/quic_initial_www_google_com.bin",
         "bin/tls_clienthello_4pda_to.bin",
         "bin/tls_clienthello_max_ru.bin",
-        "bin/tls_clienthello_www_google_com.bin"
+        "bin/tls_clienthello_www_google_com.bin",
+        "bin/stun.bin"
     ];
     const BATLIST: [&str; 19] = [
         "general.bat",
