@@ -129,7 +129,7 @@ fn get_options(content: String) -> Vec<String> {
 /// Converts original .bat to new .nix
 fn convert(options: Vec<String>) -> String {
     const GAME_FILTER: &str = "1024-65535";
-    const UDP_PORTS: &str = "\"443\" \"1024-65535\"";
+    const UDP_PORTS: &str = "\"443\" \"1024:65535\"";
     let bin: String = format!("{}/bin/", file_dir());
     let lists: String = format!("{}/lists/", file_dir());
 

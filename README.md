@@ -11,7 +11,7 @@ One-click utility for downloading and porting strategies from Flowseal/zapret-di
   services.zapret = {
     enable = true;
     udpSupport = true;
-    udpPorts = [ "443" "1024-65535" ];
+    udpPorts = [ "443" "1024:65535" ];
     
     params = [
       params_from_config
@@ -21,8 +21,5 @@ One-click utility for downloading and porting strategies from Flowseal/zapret-di
 ```
 3. It will try to copy files into /etc/nixos/zapret
 4. Done!
-
-## Known issues:
-- Firewall doesn't work with configuration
 
 # Thanks for visiting
