@@ -22,4 +22,7 @@ One-click utility for downloading and porting strategies from Flowseal/zapret-di
 3. It will try to copy files into /etc/nixos/zapret
 4. Done!
 
+## Known issues:
+- Firewall doesn't work with configuration
+
 # Thanks for visiting
