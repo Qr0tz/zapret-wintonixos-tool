@@ -1,6 +1,10 @@
 # Port strategies from Flowseal/zapret-discord-youtube repo to nixos config
 One-click utility for downloading and porting strategies from Flowseal/zapret-discord-youtube repo to your nixos configuration (zapret nixos service configurations)
 
+## Useful information
+- Lists are located in /etc/zapretfiles/lists. You can modify your lists here (recommended to modify `user` list files because they are not replaced after next download)
+- All files are downloaded from `main` branch.
+
 ## Process
 1. Tool downloads necessary files from Flowseal/zapret-discord-youtube repo to /etc/zapretfiles
 2. Converts to .nix configuration files (layout below)

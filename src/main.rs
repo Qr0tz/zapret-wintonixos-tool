@@ -1,4 +1,4 @@
-use std::{fs::{self, File}, io, process::{self, Command}};
+use std::{fs::{self, File}, io, path::Path, process::{self, Command}};
 
 use reqwest::blocking::Response;
 
@@ -17,6 +17,28 @@ fn info(message: String) {
 
 fn file_dir() -> String {
     String::from("/etc/zapretfiles")
+}
+
+/// Create user lists
+fn create_user_lists() {
+    let lists_dir: String = format!("{}/lists", file_dir());
+
+    let files: [String; 3] = [
+        format!("{}/ipset-exclude-user.txt", lists_dir),
+        format!("{}/list-general-user.txt", lists_dir),
+        format!("{}/list-exclude-user.txt", lists_dir)
+    ];
+
+    // Create user lists with some content (copied from Flowseal's service)
+    if !Path::new(&files[0]).exists() {
+        fs::write(&files[0], "203.0.113.113/32").expect(_fatal_message("Can't create ipset-exclude-user.txt").as_str());
+    }
+    if !Path::new(&files[1]).exists(){
+        fs::write(&files[1], "domain.example.abc").expect(_fatal_message("Can't create list-general-user.txt").as_str());
+    }
+    if !Path::new(&files[2]).exists(){
+        fs::write(&files[2], "domain.example.abc").expect(_fatal_message("Can't create list-exclude-user.txt").as_str());
+    }
 }
 
 /// Downloads files and save converted files
@@ -77,6 +99,10 @@ fn download() {
         let mut file = File::create(file).expect(_fatal_message("Failed to create file").as_str());
         io::copy(&mut response, &mut file).expect(_fatal_message("Failed to copy contents").as_str());
     }
+
+    // Create user lists
+    create_user_lists();
+
     info(String::from("Download finished\n"));
 
     // Getting .bat files, and save generated .nix
@@ -129,7 +155,11 @@ fn get_options(content: String) -> Vec<String> {
 
 /// Converts original .bat to new .nix
 fn convert(options: Vec<String>) -> String {
-    const GAME_FILTER: &str = "1024-65535";
+    // Game filter
+    const GAME_FILTER_ALL: &str = "1024-65535"; // TCP & UDP by default (Reccomened) (GAME_FILTER flag replaced to this)
+    const GAME_FILTER_TCP: &str = GAME_FILTER_ALL;
+    const GAME_FILTER_UDP: &str = GAME_FILTER_ALL;
+
     const UDP_PORTS: &str = "\"443\" \"1024:65535\"";
     let bin: String = format!("{}/bin/", file_dir());
     let lists: String = format!("{}/lists/", file_dir());
@@ -138,7 +168,12 @@ fn convert(options: Vec<String>) -> String {
     let _ = new_options.remove(0);
     new_options = new_options
         .iter()
-        .map(|s| s.replace("%GameFilter%", GAME_FILTER))
+        // Replace GameFilter flags
+        .map(|s| s.replace("%GameFilter%", GAME_FILTER_ALL))
+        .map(|s| s.replace("%GameFilterTCP%", GAME_FILTER_TCP))
+        .map(|s| s.replace("%GameFilterUDP%", GAME_FILTER_UDP))
+
+        // Replace lists and bin
         .map(|s| s.replace("%BIN%", bin.as_str()))
         .map(|s| s.replace("%LISTS%", lists.as_str()))
         .map(|s| s.replace("\"", "\\\""))
