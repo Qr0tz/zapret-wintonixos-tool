@@ -27,6 +27,6 @@ One-click utility for downloading and porting strategies from Flowseal/zapret-di
 4. Done!
 
 ## TODO
-- Configuration files that will be read and appended to the end of the downloaded lists.
+- No todos right now!
 
 # Thanks for visiting
