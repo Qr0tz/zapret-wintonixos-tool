@@ -45,7 +45,7 @@ fn create_user_lists() {
 fn download() {
     const URL: &str = "https://raw.githubusercontent.com/Flowseal/zapret-discord-youtube/refs/heads/main/";
     // Files to download
-    const DOWNLOAD_LIST: [&str; 10] = [
+    const DOWNLOAD_LIST: [&str; 11] = [
         "lists/ipset-all.txt",
         "lists/ipset-exclude.txt",
         "lists/list-exclude.txt",
@@ -53,6 +53,7 @@ fn download() {
         "lists/list-google.txt",
 
         "bin/quic_initial_www_google_com.bin",
+        "bin/quic_initial_dbankcloud_ru.bin",
         "bin/tls_clienthello_4pda_to.bin",
         "bin/tls_clienthello_max_ru.bin",
         "bin/tls_clienthello_www_google_com.bin",

@@ -27,6 +27,8 @@ One-click utility for downloading and porting strategies from Flowseal/zapret-di
 4. Done!
 
 ## TODO
-- No todos right now!
+- Rewrite it to work as flake
 
 # Thanks for visiting
+
+##### Code is such a mess I know it
