@@ -1,3 +1,7 @@
+> [!WARNING]
+> I am currently fully rewriting this program in shell scripts
+> It will also work on non-nixos systems
+
 # Port strategies from Flowseal/zapret-discord-youtube repo to nixos config
 One-click utility for downloading and porting strategies from Flowseal/zapret-discord-youtube repo to your nixos configuration (zapret nixos service configurations)
 
